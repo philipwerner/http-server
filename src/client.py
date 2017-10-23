@@ -13,5 +13,5 @@ def client(message):
         msg += port.decode("utf8")
         if len(port) < 8:
             break
-    print(msg)
+    return msg
     client.close()
