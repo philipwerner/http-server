@@ -19,3 +19,8 @@ def test_buff_long_message():
 def test_non_ascii_message():
     from client import client
     assert client("éclairs") == "éclairs"
+    
+
+def test_buffer_length_exact_multiple():
+    from client import client
+    assert len(client("This is 8 awesum")) % 8 == 0
