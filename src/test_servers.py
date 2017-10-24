@@ -1,6 +1,21 @@
-from server import server
+# -*- coding: utf-8 -*-
+import pytest
 
 def test_send_message():
     from client import client
-    server()
-    assert client("This is a test") == msg
+    assert client("This is a test") == "This is a test"
+
+
+def test_buff_short_message():
+    from client import client
+    assert len(client("anothe")) == 6
+
+
+def test_buff_long_message():
+    from client import client
+    assert len(client("Caticus cuteicus throwup on")) == 27
+
+
+def test_non_ascii_message():
+    from client import client
+    assert client("éclairs") == "éclairs"
