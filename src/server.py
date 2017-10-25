@@ -28,5 +28,15 @@ def server():
         print("\nClosing the server!")
         sys.exit()
 
+
+def response_ok():
+    """Return a HTTP "200 OK" response."""
+    pass
+
+
+def response_error():
+    """Return a HTTP "500 Internal Server Error"."""
+    pass
+
 if __name__ is "__main__":
     server()
