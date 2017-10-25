@@ -2,6 +2,7 @@
 """Open a server and listen for messages from the client."""
 import socket
 import sys
+import email.utils
 
 
 def server():
@@ -16,22 +17,25 @@ def server():
             msg = b''
             timer = True
             while timer:
-                part = conn.recv(8)
+                part = conn.recv(15)
                 msg += part
                 if b"@@@" in msg:
                     timer = False
-            conn.sendall(msg)
+            print(msg)
+            conn.sendall(response_ok() + b"@@@")
             conn.close()
     except KeyboardInterrupt:
         conn.close()
         server.close()
         print("\nClosing the server!")
-        sys.exit()
+        sys.exit(1)
 
 
 def response_ok():
     """Return a HTTP "200 OK" response."""
-    pass
+    date = email.utils.formatdate(usegmt=True).encode("utf-8")
+    response_header = b"HTTP/1.1 200 OK\r\nDate:" + date + b"\r\nContent-Type: text/plain\r\n\r\nHere is the response you asked for!"
+    return response_header
 
 
 def response_error():
