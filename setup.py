@@ -12,5 +12,5 @@ setup(
         'development': ['ipython']},
     entry_points={
         'console_scripts': [
-            'runme = Sockets:main'
+            'runme = server:server'
         ]})
