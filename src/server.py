@@ -21,7 +21,10 @@ def server():
                 msg += part
                 if b"@@@" in msg:
                     timer = False
-            print(msg)
+                if b"500" in msg:
+                    timer = False
+                    conn.sendall(response_error() + b"@@@")
+            print(msg.decode("utf-8"))
             conn.sendall(response_ok() + b"@@@")
             conn.close()
     except KeyboardInterrupt:
@@ -40,7 +43,8 @@ def response_ok():
 
 def response_error():
     """Return a HTTP "500 Internal Server Error"."""
-    pass
+    error_response = b"The server encountered an internal error or misconfiguration and was unable to complete your request."
+    return error_response
 
 if __name__ is "__main__":
     server()
