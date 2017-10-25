@@ -15,17 +15,21 @@ def server():
         while True:
             conn, addr = server.accept()
             msg = b''
+            msg_header = b''
             timer = True
             while timer:
                 part = conn.recv(15)
-                msg += part
-                if b"@@@" in msg:
-                    timer = False
-                if b"500" in msg:
-                    timer = False
-                    conn.sendall(response_error() + b"@@@")
+                msg_header += part
+                if b'\n' in msg_header:
+                    msg += part
+                    if b"@@@" in msg:
+                        timer = False
+                    if b"500" in msg:
+                        timer = False
+                        conn.sendall(response_error() + b"@@@")
+            print(msg_header.decode("utf-8"))
             print(msg.decode("utf-8"))
-            conn.sendall(response_ok() + b"@@@")
+            conn.sendall(response_ok() + msg + b"@@@")
             conn.close()
     except KeyboardInterrupt:
         conn.close()
@@ -37,7 +41,7 @@ def server():
 def response_ok():
     """Return a HTTP "200 OK" response."""
     date = email.utils.formatdate(usegmt=True).encode("utf-8")
-    response_header = b"HTTP/1.1 200 OK\r\nDate:" + date + b"\r\nContent-Type: text/plain\r\n\r\nHere is the response you asked for!"
+    response_header = b"HTTP/1.1 200 OK\r\nDate:" + date + b"\r\nContent-Type: text/plain\r\n\r\n"
     return response_header
 
 
