@@ -15,19 +15,12 @@ def server():
         while True:
             conn, addr = server.accept()
             msg = b''
-            msg_header = b''
             timer = True
             while timer:
-                part = conn.recv(15)
-                msg_header += part
-                if b'\r\n' in msg_header:
-                    msg += part
-                    if b"@@@" in msg:
-                        timer = False
-                    if b"500" in msg:
-                        timer = False
-                        conn.sendall(response_error() + b"@@@")
-            print(msg_header.decode("utf-8"))
+                part = conn.recv(8)
+                msg += part
+                if b"@@@" in msg:
+                    timer = False
             print(msg.decode("utf-8"))
             conn.sendall(response_ok() + msg + b"@@@")
             conn.close()

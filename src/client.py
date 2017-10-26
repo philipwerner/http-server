@@ -22,7 +22,6 @@ def client(message):
         if b"@@@" in msg:
             timer = False
     client.close()
-    print(msg.decode("utf-8").replace("@@@", ""))
     return msg.decode("utf-8").replace("@@@", "")
 
 if __name__ is "__main__":
