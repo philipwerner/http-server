@@ -22,10 +22,7 @@ def server():
                 if b"@@@" in msg:
                     timer = False
             print(msg.decode("utf-8"))
-            try:
-                parse_request(msg)
-            except:
-                pass
+            conn.sendall()
             conn.close()
     except KeyboardInterrupt:
         conn.close()
@@ -42,7 +39,7 @@ def response_ok():
     return response_header
 
 
-def response_error():
+def response_error(error_code, reason_phrase):
     """Return a HTTP "500 Internal Server Error"."""
     return "The server encountered an internal error or misconfiguration and\
     was unable to complete your request. Please contact the server admin,\
@@ -52,9 +49,11 @@ def response_error():
 
 def parse_request(request):
     """Parse request to make sure it is a GET request."""
-    if "GET" and "HTTP/1.1" not in request:
-        raise ValueError("Server currently only accepting\
-            HTTP/1.1 GET requests.")
+    if "GET" not in request:
+        raise ValueError("Server currently only accepting GET requests.")
+        return "405 Method Not Allowed"
+    elif "HTTP/1.1" not in request:
+        raise 
     elif "HOST: 127.0.0.1:5000" not in request:
         raise ValueError("Bad Request: No Host header.")
     elif "GET /http-server/src/server.py HTTP/1.1\r\n" not in request:
