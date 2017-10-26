@@ -22,7 +22,7 @@ def server():
                 if b"@@@" in msg:
                     timer = False
             print(msg.decode("utf-8"))
-            conn.sendall()
+            conn.sendall(parse_request(msg))
             conn.close()
     except KeyboardInterrupt:
         conn.close()
@@ -41,25 +41,29 @@ def response_ok():
 
 def response_error(error_code, reason_phrase):
     """Return a HTTP "500 Internal Server Error"."""
-    return "The server encountered an internal error or misconfiguration and\
-    was unable to complete your request. Please contact the server admin,\
-    master_of_web@example.com, and inform them of the time the error occured,\
-    and anything you might have done that may have caused the error."
+    return error_code + reason_phrase
+    # return "The server encountered an internal error or misconfiguration and\
+    # was unable to complete your request. Please contact the server admin,\
+    # master_of_web@example.com, and inform them of the time the error occured,\
+    # and anything you might have done that may have caused the error."
 
 
 def parse_request(request):
     """Parse request to make sure it is a GET request."""
-    if "GET" not in request:
+    if b"GET" not in request:
         raise ValueError("Server currently only accepting GET requests.")
-        return "405 Method Not Allowed"
-    elif "HTTP/1.1" not in request:
-        raise 
-    elif "HOST: 127.0.0.1:5000" not in request:
+        return response_error(405, b"Method Not Allowed")
+    elif b"HTTP/1.1" not in request:
+        raise ValueError("Invalid HTTP version")
+        return response_error(505, b"HTTP version not supported")
+    elif b"HOST: 127.0.0.1:5000" not in request:
         raise ValueError("Bad Request: No Host header.")
-    elif "GET /http-server/src/server.py HTTP/1.1\r\n" not in request:
+        return response_error(403, b"Forbidden")
+    elif b"GET /http-server/src/server.py HTTP/1.1\r\n" not in request:
         raise ValueError("Malformed request.")
+        return response_error(404, b"Malformed Request")
     else:
-        return request.split(" ")[1]
+        return request.split(b" ")[1]
 
 if __name__ is "__main__":
     server()
