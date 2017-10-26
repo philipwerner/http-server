@@ -20,7 +20,7 @@ def server():
             while timer:
                 part = conn.recv(15)
                 msg_header += part
-                if b'\n' in msg_header:
+                if b'\r\n' in msg_header:
                     msg += part
                     if b"@@@" in msg:
                         timer = False
@@ -41,14 +41,14 @@ def server():
 def response_ok():
     """Return a HTTP "200 OK" response."""
     date = email.utils.formatdate(usegmt=True).encode("utf-8")
-    response_header = b"HTTP/1.1 200 OK\r\nDate:" + date + b"\r\nContent-Type: text/plain\r\n\r\n"
+    response_header = b"HTTP/1.1 200 OK\r\nDate:" + date + b"\r\nContent-Type:\
+    text/plain\r\n\r\n"
     return response_header
 
 
 def response_error():
     """Return a HTTP "500 Internal Server Error"."""
-    error_response = b"The server encountered an internal error or misconfiguration and was unable to complete your request."
-    return error_response
+    pass
 
 if __name__ is "__main__":
     server()
