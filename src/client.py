@@ -23,7 +23,10 @@ def client(message):
         if b"@@@" in msg:
             timer = False
     client.close()
-    return msg.decode("utf-8").replace("@@@", "")
+    if sys.version_info.major == 3:
+        return msg.decode("utf-8").replace("@@@", "")
+    else:
+        return msg.replace("@@@", "")
 
 if __name__ is "__main__":  # pragma: no cover
     msg = sys.argv[1]
