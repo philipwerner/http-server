@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
     name='http-server',
     description='''Sets up server and client sockets''',
-    author='Cody Dibble, Chai Narukulla and Philip Werner',
+    author='Cody Dibble and Philip Werner',
     package_dir={'': 'src'},
     py_modules=['client', 'server'],
     install_requires=[],
