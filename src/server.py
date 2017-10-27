@@ -69,7 +69,7 @@ def response_error(error):
 
 def parse_request(request):
     """Parse request to make sure it is a GET request."""
-    if "GET" not in request:
+    if b"GET" not in request:
         raise ValueError("Server currently only accepting GET requests.")
     elif "HTTP/1.1" not in request:
         raise IndexError("Unaccepted HTTP version.")
@@ -78,7 +78,7 @@ def parse_request(request):
     elif "GET /http-server/src/server.py HTTP/1.1\r\n" not in request:
         raise IOError("Malformed request.")
     else:
-        return request.split(" ")[1]
+        return request.split(b" ")[1]
 
 if __name__ is "__main__":  # pragma: no cover
     server()
