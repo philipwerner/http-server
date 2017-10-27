@@ -5,7 +5,7 @@ import sys
 import email.utils
 
 
-def server():
+def server():  # pragma: no cover
     """Open a server to echo back a message."""
     server = socket.socket(socket.AF_INET,
                            socket.SOCK_STREAM, socket.IPPROTO_TCP)
@@ -22,10 +22,6 @@ def server():
                 if b"@@@" in msg:
                     timer = False
             print(msg.decode("utf-8"))
-            try:
-                parse_request(msg)
-            except:
-                pass
             conn.close()
     except KeyboardInterrupt:
         conn.close()
@@ -44,23 +40,11 @@ def response_ok():
 
 def response_error():
     """Return a HTTP "500 Internal Server Error"."""
-    return "The server encountered an internal error or misconfiguration and\
-    was unable to complete your request. Please contact the server admin,\
-    master_of_web@example.com, and inform them of the time the error occured,\
-    and anything you might have done that may have caused the error."
+    return "500 Internal Server Error: The server encountered an internal error\
+    or misconfiguration and was unable to complete your request.\
+    Please contact the server admin, master_of_web@example.com, and inform\
+    them of the time the error occured, and anything you might have done that\
+    may have caused the error."
 
-
-def parse_request(request):
-    """Parse request to make sure it is a GET request."""
-    if "GET" and "HTTP/1.1" not in request:
-        raise ValueError("Server currently only accepting\
-            HTTP/1.1 GET requests.")
-    elif "HOST: 127.0.0.1:5000" not in request:
-        raise ValueError("Bad Request: No Host header.")
-    elif "GET /http-server/src/server.py HTTP/1.1\r\n" not in request:
-        raise ValueError("Malformed request.")
-    else:
-        return request.split(" ")[1]
-
-if __name__ is "__main__":
+if __name__ is "__main__":  # pragma: no cover
     server()
