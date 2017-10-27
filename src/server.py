@@ -31,6 +31,7 @@ def server():  # pragma: no cover
                 conn.sendall(response_error("bad_request") + b"@@@")
             except IOError:
                 conn.sendall(response_error("malformed_request") + b"@@@")
+            conn.sendall(response_ok() + b"@@@")
             conn.close()
     except KeyboardInterrupt:
         conn.close()

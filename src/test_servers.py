@@ -69,3 +69,9 @@ def test_response_error_malformed_request_returns_400_error():
     """Test that malformed_request error returns 400 Error."""
     from server import response_error
     assert b"server" in response_error("malformed_request")
+
+
+def test_client_recieves_ok_response():
+    """Test that server will recieve ok response after sending proper header."""
+    from client import client
+    from server import response_ok
