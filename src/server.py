@@ -5,7 +5,7 @@ import sys
 import email.utils
 
 
-def server():
+def server():  # pragma: no cover
     """Open a server to echo back a message."""
     server = socket.socket(socket.AF_INET,
                            socket.SOCK_STREAM, socket.IPPROTO_TCP)
@@ -22,7 +22,17 @@ def server():
                 if b"@@@" in msg:
                     timer = False
             print(msg.decode("utf-8"))
-            conn.sendall()
+            try:
+                if parse_request(msg) == b"/http-server/src/server.py":
+                    conn.sendall(response_ok())
+            except ValueError:
+                response_error(b"forbidden")
+            except IndexError:
+                response_error(b"no_support")
+            except KeyError:
+                response_error(b"bad_request")
+            except IOError:
+                response_error(b"malformed_request")
             conn.close()
     except KeyboardInterrupt:
         conn.close()
@@ -39,27 +49,36 @@ def response_ok():
     return response_header
 
 
-def response_error(error_code, reason_phrase):
+def response_error(error):
     """Return a HTTP "500 Internal Server Error"."""
-    return "The server encountered an internal error or misconfiguration and\
-    was unable to complete your request. Please contact the server admin,\
-    master_of_web@example.com, and inform them of the time the error occured,\
-    and anything you might have done that may have caused the error."
+    if error == "forbidden":
+        return b"403 Forbidden: You don't have permission on this server."
+    if error == "no_support":
+        return b"505 HTTP Version Not Supported."
+    if error == "bad_request":
+        return b"The remote server returned an error: (400) Bad Request.\
+        No Host."
+    if error == b"malformed_request":
+        return b"The remote server returned an error: (400) Bad Request.\
+        Malformed request."
+    # return "The server encountered an internal error or misconfiguration and\
+    # was unable to complete your request. Please contact the server admin,\
+    # master_of_web@example.com, and inform them of the time the error occured,\
+    # and anything you might have done that may have caused the error."
 
 
 def parse_request(request):
     """Parse request to make sure it is a GET request."""
     if "GET" not in request:
         raise ValueError("Server currently only accepting GET requests.")
-        return "405 Method Not Allowed"
     elif "HTTP/1.1" not in request:
-        raise 
+        raise IndexError("Unaccepted HTTP version.")
     elif "HOST: 127.0.0.1:5000" not in request:
-        raise ValueError("Bad Request: No Host header.")
+        raise KeyError("Bad Request: No Host header.")
     elif "GET /http-server/src/server.py HTTP/1.1\r\n" not in request:
-        raise ValueError("Malformed request.")
+        raise IOError("Malformed request.")
     else:
         return request.split(" ")[1]
 
-if __name__ is "__main__":
+if __name__ is "__main__":  # pragma: no cover
     server()
