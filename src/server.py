@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """Open a server and listen for messages from the client."""
 import socket
-import sys
 import email.utils
 
 
@@ -22,23 +21,21 @@ def server():  # pragma: no cover
                 if b"@@@" in msg:
                     timer = False
             print(msg.decode("utf-8"))
-            try:
-                if parse_request(msg) == b"/http-server/src/server.py":
-                    conn.sendall(response_ok())
-            except ValueError:
-                response_error(b"forbidden")
-            except IndexError:
-                response_error(b"no_support")
-            except KeyError:
-                response_error(b"bad_request")
-            except IOError:
-                response_error(b"malformed_request")
-            conn.close()
+        try:
+            parse_request(msg)
+        except ValueError:
+            conn.sendall(response_error(b"forbidden"))
+        except IndexError:
+            conn.sendall(response_error(b"no_support"))
+        except KeyError:
+            conn.sendall(response_error(b"bad_request"))
+        except IOError:
+            conn.sendall(response_error(b"malformed_request"))
+        conn.close()
     except KeyboardInterrupt:
         conn.close()
         server.close()
         print("\nClosing the server!")
-        sys.exit(1)
 
 
 def response_ok():
@@ -51,11 +48,11 @@ def response_ok():
 
 def response_error(error):
     """Return a HTTP "500 Internal Server Error"."""
-    if error == "forbidden":
+    if error == b"forbidden":
         return b"403 Forbidden: You don't have permission on this server."
-    if error == "no_support":
+    if error == b"no_support":
         return b"505 HTTP Version Not Supported."
-    if error == "bad_request":
+    if error == b"bad_request":
         return b"The remote server returned an error: (400) Bad Request.\
         No Host."
     if error == b"malformed_request":
@@ -71,11 +68,11 @@ def parse_request(request):
     """Parse request to make sure it is a GET request."""
     if b"GET" not in request:
         raise ValueError("Server currently only accepting GET requests.")
-    elif "HTTP/1.1" not in request:
+    elif b"HTTP/1.1" not in request:
         raise IndexError("Unaccepted HTTP version.")
-    elif "HOST: 127.0.0.1:5000" not in request:
+    elif b"HOST: 127.0.0.1:5000" not in request:
         raise KeyError("Bad Request: No Host header.")
-    elif "GET /http-server/src/server.py HTTP/1.1\r\n" not in request:
+    elif b"GET /http-server/src/server.py HTTP/1.1\r\n" not in request:
         raise IOError("Malformed request.")
     else:
         return request.split(b" ")[1]

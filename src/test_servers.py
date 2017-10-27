@@ -43,22 +43,22 @@ def test_parse_request_raises_io_error():
 def test_response_error_forbidden_returns_403_error():
     """Test that forbidden error returns 403 Error."""
     from server import response_error
-    assert b"permission" in response_error("forbidden")
+    assert "permission" in response_error("forbidden")
 
 
 def test_response_error_no_support_returns_505_error():
     """Test that no_support error returns 505 Error."""
     from server import response_error
-    assert b"HTTP" in response_error("no_support")
+    assert "HTTP" in response_error("no_support")
 
 
 def test_response_error_bad_request_returns_400_error():
     """Test that bad_request error returns 400 Error."""
     from server import response_error
-    assert b"No" in response_error("bad_request")
+    assert "No" in response_error("bad_request")
 
 
 def test_response_error_malformed_request_returns_400_error():
     """Test that malformed_request error returns 400 Error."""
     from server import response_error
-    assert b"request" in response_error("malformed_request")
+    assert "server" in response_error("malformed_request")
