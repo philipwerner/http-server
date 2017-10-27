@@ -21,17 +21,17 @@ def server():  # pragma: no cover
                 if b"@@@" in msg:
                     timer = False
             print(msg.decode("utf-8"))
-        try:
-            parse_request(msg)
-        except ValueError:
-            conn.sendall(response_error(b"forbidden"))
-        except IndexError:
-            conn.sendall(response_error(b"no_support"))
-        except KeyError:
-            conn.sendall(response_error(b"bad_request"))
-        except IOError:
-            conn.sendall(response_error(b"malformed_request"))
-        conn.close()
+            try:
+                parse_request(msg)
+            except ValueError:
+                conn.sendall(response_error("forbidden") + b"@@@")
+            except IndexError:
+                conn.sendall(response_error("no_support") + b"@@@")
+            except KeyError:
+                conn.sendall(response_error("bad_request") + b"@@@")
+            except IOError:
+                conn.sendall(response_error("malformed_request") + b"@@@")
+            conn.close()
     except KeyboardInterrupt:
         conn.close()
         server.close()
@@ -48,15 +48,15 @@ def response_ok():
 
 def response_error(error):
     """Return a HTTP "500 Internal Server Error"."""
-    if error == b"forbidden":
-        return b"403 Forbidden: You don't have permission on this server."
-    if error == b"no_support":
+    if error == "forbidden":
+        return b"HTTP/1.1 403 Forbidden: You don't have permission on this server."
+    if error == "no_support":
         return b"505 HTTP Version Not Supported."
-    if error == b"bad_request":
-        return b"The remote server returned an error: (400) Bad Request.\
+    if error == "bad_request":
+        return b"HTTP/1.1 The remote server returned an error: (400) Bad Request.\
         No Host."
-    if error == b"malformed_request":
-        return b"The remote server returned an error: (400) Bad Request.\
+    if error == "malformed_request":
+        return b"HTTP/1.1 The remote server returned an error: (400) Bad Request.\
         Malformed request."
     # return "The server encountered an internal error or misconfiguration and\
     # was unable to complete your request. Please contact the server admin,\

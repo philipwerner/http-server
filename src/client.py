@@ -15,13 +15,17 @@ def client(message):
         client.sendall(message)
     msg = b''
     timer = True
-    while timer:
-        part = client.recv(15)
-        msg += part
-        if b"@@@" in msg:
-            timer = False
-    client.close()
-    return msg.decode("utf-8").replace("@@@", "")
+    try:
+        while timer:
+            part = client.recv(15)
+            msg += part
+            if b"@@@" in msg:
+                timer = False
+        client.close()
+        return msg.decode("utf-8").replace("@@@", "")
+    except KeyboardInterrupt:
+        client.close()
+        print("Bye bye client connection.")
 
 if __name__ is "__main__":
     msg = sys.argv[1]
