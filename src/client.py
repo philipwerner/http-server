@@ -23,10 +23,10 @@ def client(message):
                 timer = False
         client.close()
         return msg.decode("utf-8").replace("@@@", "")
-    except KeyboardInterrupt:
+    except KeyboardInterrupt:  # pragma: no cover
         client.close()
         print("Bye bye client connection.")
 
-if __name__ is "__main__":
+if __name__ is "__main__":  # pragma: no cover
     msg = sys.argv[1]
     print(client(msg))

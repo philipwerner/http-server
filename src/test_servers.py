@@ -74,4 +74,33 @@ def test_response_error_malformed_request_returns_400_error():
 def test_client_recieves_ok_response():
     """Test that server will recieve ok response after sending proper header."""
     from client import client
-    from server import response_ok
+    message = 'GET /http-server/src/server.py HTTP/1.1\r\nHOST: 127.0.0.1:5000'
+    assert "200 OK" in client(message)
+
+
+def test_client_recieves_forbidden_error():
+    """Test that server sends forbidden error and client recieves it."""
+    from client import client
+    message = 'PUT /http-server/src/server.py HTTP/1.1\r\nHOST: 127.0.0.1:5000'
+    assert "403 Forbidden" in client(message)
+
+
+def test_client_recieves_http_version_error():
+    """Test that server sends forbidden error and client recieves it."""
+    from client import client
+    message = 'GET /http-server/src/server.py HTTP/1.0\r\nHOST: 127.0.0.1:5000'
+    assert "505 HTTP" in client(message)
+
+
+def test_client_recieves_no_host_error():
+    """Test that server sends forbidden error and client recieves it."""
+    from client import client
+    message = 'GET /http-server/src/server.py HTTP/1.1\r\n 127.0.0.1:5000'
+    assert "400" in client(message)
+
+
+def test_client_recieves_malformed_request_error():
+    """Test that server sends forbidden error and client recieves it."""
+    from client import client
+    message = 'GET /htp-server/src/server.py HTTP/1.1\r\nHOST: 127.0.0.1:5000'
+    assert "400" in client(message)
