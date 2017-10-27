@@ -21,6 +21,7 @@ def server():  # pragma: no cover
                 if b"@@@" in msg:
                     timer = False
             print(msg.decode("utf-8"))
+
             try:
                 parse_request(msg)
             except ValueError:
