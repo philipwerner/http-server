@@ -24,8 +24,8 @@ def client(message):
     if sys.version_info.major == 3:
         return msg.decode("utf-8").replace("@@@", "")
     else:
-        return msg.decode("utf-8").replace("@@@", "")
+        return msg.replace("@@@", "")
 
-if __name__ is "__main__":
+if __name__ is "__main__":  # pragma: no cover
     msg = sys.argv[1]
     print(client(msg))
