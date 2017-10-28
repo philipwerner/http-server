@@ -2,6 +2,7 @@
 """Open a server and listen for messages from the client."""
 import socket
 import email.utils
+import mimetypes
 
 
 def server():  # pragma: no cover
@@ -32,7 +33,11 @@ def server():  # pragma: no cover
                 conn.sendall(response_error("bad_request") + b"@@@")
             except IOError:
                 conn.sendall(response_error("malformed_request") + b"@@@")
-            conn.sendall(response_ok() + b"@@@")
+            
+            try:
+                conn.sendall(response_ok() + resolve_uri(parse_request(msg)) + b"@@@")
+            except IOError:
+                conn.sendall(b"No such file or directory exists.")
             conn.close()
     except KeyboardInterrupt:
         conn.close()
@@ -78,6 +83,32 @@ def parse_request(request):
         raise IOError("Malformed request.")
     else:
         return request.split(b" ")[1]
+
+
+def resolve_uri(uri):
+    """Will return a body for a response and an indication of the type of content contained in the body."""
+    try:
+        if uri[-1] == '/':
+            print(uri[-1])
+            import HTML
+            from os import listdir
+            file_path = '.' + uri.split('.')[-1]
+            uri_dir = listdir(uri)
+            list_html = HTML.list(uri_dir)
+            return (list_html, file_path)
+        else:
+            content_type = mimetypes.guess_type(uri)
+            file_path = '.' + uri.split('.')[-1]
+            import io
+            with io.open(uri, encoding='utf-8') as file:
+                file_contents = file.read()
+                print('<body>' + file_contents + '</body>', file_path)
+                return ('<body>' + file_contents + '</body>', content_type)
+
+    except IOError:
+        raise IOError("No file or directory of that name exists")
+
+
 
 if __name__ is "__main__":  # pragma: no cover
     server()
