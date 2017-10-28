@@ -110,7 +110,8 @@ def test_no_file_response():
     """Test that request for a file that does not exist returns proper response."""
     from client import client
     message = 'GET www.http-server/src/webroot/awesome.txt HTTP/1.1\r\nHOST: 127.0.0.1:5000'
-    assert "403" in client(message)   
+    assert "403" in client(message)
+
 
 # def test_buff_short_message():
 #     """Test that whole message comes when less than buffer."""
