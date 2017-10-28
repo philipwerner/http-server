@@ -98,6 +98,20 @@ def test_client_recieves_malformed_request_error():
     message = 'GET /htp-server/src/server.py HTTP/1.1\r\nHOST: 127.0.0.1:5000'
     assert "400" in client(message)
 
+
+def test_server_reads_and_returns_content_type():
+    """Test that the server is returning content type to client."""
+    from client import client
+    message = 'GET www.http-server/src/webroot/sample.txt HTTP/1.1\r\nHOST: 127.0.0.1:5000'
+    assert "text/plain" in client(message)
+
+
+def test_no_file_response():
+    """Test that request for a file that does not exist returns proper response."""
+    from client import client
+    message = 'GET www.http-server/src/webroot/awesome.txt HTTP/1.1\r\nHOST: 127.0.0.1:5000'
+    assert "403" in client(message)   
+
 # def test_buff_short_message():
 #     """Test that whole message comes when less than buffer."""
 #     from client import client
