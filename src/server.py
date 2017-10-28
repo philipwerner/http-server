@@ -1,44 +1,32 @@
 # -*- coding: utf-8 -*-
 """Open a server and listen for messages from the client."""
-import socket
 import email.utils
 import mimetypes
 import os
 
 
-def server():  # pragma: no cover
+def server(server, port):  # pragma: no cover
     """Open a server to echo back a message."""
-    server = socket.socket(socket.AF_INET,
-                           socket.SOCK_STREAM, socket.IPPROTO_TCP)
-    server.bind(('127.0.0.1', 5000))
-    server.listen(1)
-    try:
-        while True:
-            conn, addr = server.accept()
-            msg = b''
-            timer = True
-            while timer:
-                part = conn.recv(8)
-                msg += part
-                if b"@@@" in msg:
-                    timer = False
-            print(msg.decode("utf-8").replace("@@@", ""))
+    server = server
+    msg = b''
+    timer = True
+    while timer:
+        part = server.recv(8)
+        msg += part
+        if b"@@@" in msg:
+            timer = False
+    print(msg.decode("utf-8").replace("@@@", ""))
 
-            try:
-                conn.sendall(parse_request(msg))
-            except ValueError:
-                conn.sendall(response_error("forbidden"))
-            except IndexError:
-                conn.sendall(response_error("no_support"))
-            except KeyError:
-                conn.sendall(response_error("bad_request"))
-            except AttributeError:
-                conn.sendall(response_error("malformed_request"))
-            conn.close()
-    except KeyboardInterrupt:
-        conn.close()
-        server.close()
-        print("\nClosing the server!")
+    try:
+        server.sendall(parse_request(msg))
+    except ValueError:
+        server.sendall(response_error("forbidden"))
+    except IndexError:
+        server.sendall(response_error("no_support"))
+    except KeyError:
+        server.sendall(response_error("bad_request"))
+    except AttributeError:
+        server.sendall(response_error("malformed_request"))
 
 
 def response_ok(content, content_type):
