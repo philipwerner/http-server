@@ -99,7 +99,6 @@ def resolve_uri(uri):
             content_type = "directory"
             for file in os.listdir(abs_path + req_file + "/"):
                 content += file + "\n"
-                print(content)
             return content, content_type
         else:
             content_type = mimetypes.guess_type(uri)
