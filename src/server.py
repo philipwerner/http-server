@@ -89,11 +89,17 @@ def resolve_uri(uri):
                 content += file + "\n"
             return content, content_type
         else:
+            img_extensions = ['jpg', 'png', 'jpeg', 'gif']
             content_type = mimetypes.guess_type(uri)
-            import io
-            with io.open(abs_path + "webroot/" + req_file, encoding='utf-8') as file:
-                content = file.read()
-                return content, content_type[0]
+            print(req_file)
+            print(abs_path + "webroot/images/" + req_file)
+            if req_file.split(".")[1] in img_extensions:
+                with open(abs_path + "/images/" + req_file, "rb") as file:
+                    content = file.read()
+            else:
+                with open(abs_path + "webroot/" + req_file) as file:
+                    content = file.read()
+            return content, content_type[0]
     except IOError:
         return "No file or directory of that name exists"
 
