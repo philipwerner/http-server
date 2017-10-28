@@ -23,6 +23,7 @@ def client(message):
             if b"@@@" in msg:
                 timer = False
         client.close()
+        print(msg.decode("utf-8").replace("@@@", ""))
         return msg.decode("utf-8").replace("@@@", "")
     except KeyboardInterrupt:  # pragma: no cover
         client.close()
