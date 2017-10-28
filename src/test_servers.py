@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 """Test functions for echo server."""
+import pytest
 
 
 def test_response_ok_has_response_header():
     """Will test response ok has correct header."""
     from server import response_ok
-    assert b"200 OK" in response_ok()
+    assert b"200 OK" in response_ok('bloop', 'text/bloop')
 
 
 def test_parse_request_raises_value_error():
@@ -17,7 +18,7 @@ def test_parse_request_raises_value_error():
 
 
 def test_parse_request_raises_index_error():
-    """Test that value error gets raised."""
+    """Test that index error gets raised."""
     from server import parse_request
     with pytest.raises(IndexError):
         parse_request(b"GET /http-server/src/server.py HTTP/1.0\r\n\
@@ -25,25 +26,18 @@ def test_parse_request_raises_index_error():
 
 
 def test_parse_request_raises_key_error():
-    """Test that value error gets raised."""
+    """Test that key error gets raised."""
     from server import parse_request
     with pytest.raises(KeyError):
         parse_request(b"GET /http-server/src/server.py HTTP/1.1\r\n")
 
 
-def test_parse_request_raises_io_error():
-    """Test that value error gets raised."""
+def test_parse_request_raises_attribute_error():
+    """Test that attribute error gets raised."""
     from server import parse_request
-    with pytest.raises(IOError):
+    with pytest.raises(AttributeError):
         parse_request(b"GET /htp-server/src/server.py HTTP/1.1\r\n\
     HOST: 127.0.0.1:5000")
-
-
-def test_parse_request_returns_uri_if_everything_is_cool():
-    """Test that parse request returns request URI."""
-    from server import parse_request
-    assert parse_request(b"GET /http-server/src/server.py HTTP/1.1\r\n\
-    HOST: 127.0.0.1:5000") == b"/http-server/src/server.py"
 
 
 def test_response_error_forbidden_returns_403_error():
@@ -73,7 +67,7 @@ def test_response_error_malformed_request_returns_400_error():
 def test_client_recieves_ok_response():
     """Test that server will recieve ok response after sending proper header."""
     from client import client
-    message = 'GET /http-server/src/server.py HTTP/1.1\r\nHOST: 127.0.0.1:5000'
+    message = 'GET www.http-server/src/webroot/sample.txt HTTP/1.1\r\nHOST: 127.0.0.1:5000'
     assert "200 OK" in client(message)
 
 
@@ -104,12 +98,20 @@ def test_client_recieves_malformed_request_error():
     message = 'GET /htp-server/src/server.py HTTP/1.1\r\nHOST: 127.0.0.1:5000'
     assert "400" in client(message)
 
-def test_response_error_sends_500_error():
-    """Test that response error sends back 500 Error as string."""
-    from server import response_error
-    assert "500 Internal Server" in response_error()
-    
-    
+
+def test_server_reads_and_returns_content_type():
+    """Test that the server is returning content type to client."""
+    from client import client
+    message = 'GET www.http-server/src/webroot/sample.txt HTTP/1.1\r\nHOST: 127.0.0.1:5000'
+    assert "text/plain" in client(message)
+
+
+def test_no_file_response():
+    """Test that request for a file that does not exist returns proper response."""
+    from client import client
+    message = 'GET www.http-server/src/webroot/awesome.txt HTTP/1.1\r\nHOST: 127.0.0.1:5000'
+    assert "403" in client(message)   
+
 # def test_buff_short_message():
 #     """Test that whole message comes when less than buffer."""
 #     from client import client
