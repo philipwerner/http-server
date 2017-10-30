@@ -30,6 +30,6 @@ def client(message):
         print("Bye bye client connection.")
 
 
-if __name__ is "__main__":  # pragma: no cover
+if __name__ == "__main__":  # pragma: no cover
     msg = sys.argv[1]
     print(client(msg))
